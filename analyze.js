@@ -13,10 +13,10 @@ function highlight (text, style) {
 }
 
 class Analysis {
-    constructor(func, highlight_color, checkbox) {
+    constructor(func, color, checkbox) {
         this.func = func;
         this.checkbox = checkbox;
-        this.highlight_color = highlight_color;
+        this.color = color;
     }
 
     analyze(text) {
@@ -34,6 +34,7 @@ class Highlight {
 
     createSpan(text) {
         var h = document.createElement("span");
+        h.style.background = this.color;
         h.appendChild(document.createTextNode(text.slice(this.start, this.end + 1)));
         return h;
     }
@@ -57,7 +58,8 @@ function analyze() {
 
     for (var i = 0; i < analyses.length; i++) {
         if (analyses[i].checkbox.checked) {
-            highlights.push.apply(highlights, analyses[i].analyze(text));
+            console.log(analyses[i].color);
+            highlights.push.apply(highlights, analyses[i].analyze(text, analyses[i].color));
         }
     }
 
@@ -124,14 +126,14 @@ function adv_analysis(text, color) {
 
 function rep_analysis(text, color) {
     text = text.toLowerCase();
-    text = removePunctuation(text);
     var words = text.split(" ");
     var cur_pos = 0;
     recent_words = [];
     highlights = [];
     
     for (var i = 0; i < words.length; i++) {
-        if (recent_words.includes(words[i])) {
+        punctuationless = removePunctuation(words[i]);
+        if (recent_words.includes(punctuationless)) {
             highlights.push(new Highlight(cur_pos, cur_pos + words[i].length, color));
         }
 
@@ -141,7 +143,7 @@ function rep_analysis(text, color) {
             recent_words.shift();
         }
     
-        cur_pos += words[i].length;
+        cur_pos += words[i].length + 1; // We assume a single space, which is why we +1
     }
 
     return highlights;
