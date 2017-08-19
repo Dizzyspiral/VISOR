@@ -34,7 +34,6 @@ class Highlight {
 }
 
 function initializeAnalyses() {
-//    analyses.push(new Analysis(pv_analysis, "red", document.getElementById(pv_checkbox_id)));
     analyses.push(new Analysis(adv_analysis, "#a7c3f2", document.getElementById(adv_analysis_id)));
     analyses.push(new Analysis(rep_analysis, "#75c464", document.getElementById(rep_analysis_id)));
     analyses.push(new Analysis(len_analysis, "#fffd89", document.getElementById(len_analysis_id)));
