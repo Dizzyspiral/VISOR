@@ -3,6 +3,7 @@ var pv_checkbox_id = "passive_voice";
 var adv_analysis_id = "adverbs";
 var rep_analysis_id = "repetition";
 var len_analysis_id = "sentence_length";
+var analyzed_text_id = "analyzed_text";
 
 function highlight (text, style) {
     h = document.createElement("span");
@@ -32,8 +33,9 @@ class Highlight {
     }
 
     createSpan(text) {
-        h = document.createElement("span");
-        h.appendChild(document.createTextNode(text.slice(this.start, this.end)));
+        var h = document.createElement("span");
+        h.appendChild(document.createTextNode(text.slice(this.start, this.end + 1)));
+        return h;
     }
 }
 
@@ -53,25 +55,18 @@ function analyze() {
     text = text_area.value;
     highlights = [];
 
-    console.log(analyses[0].checkbox.checked);
-    console.log(analyses[1].checkbox.checked);
-    console.log(analyses[2].checkbox.checked);
-    console.log(analyses[3].checkbox.checked);
-
     for (var i = 0; i < analyses.length; i++) {
         if (analyses[i].checkbox.checked) {
             highlights.push.apply(highlights, analyses[i].analyze(text));
         }
     }
 
-    console.log(highlights);
-
     /* Then we need to do the hard part of figuring out if there are any overlapping highlighted areas,
      * and if so, which is bigger so that we can nest the span for the smaller one inside of it
      */
     
-    // Clear the text area (hopefully this removes the spans from previous analyses, too)
-    text_area.value = "";
+    var analysis_div = document.getElementById(analyzed_text_id);
+    analysis_div.innerHTML = "";
     
     /* We go through the string one character at a time, looking for the start and end positions of 
      * highlights. If two highlights overlap, we want to just add whatever one starts first. It's the
@@ -80,17 +75,28 @@ function analyze() {
      * but extend beyond the boundary of the first? There is no spannable solution to this. We'd have to 
      * start drawing text with canvas and using rectangles for background highlights. No thank you.
      */
+    var highlighted = false;
+
     for (i = 0; i < text.length; i++) {
+        highlighted = false;
+
         for (var j = 0; j < highlights.length; j++) {
             if (highlights[j].start == i) {
-                s = highlights.createSpan();
-                text_area.appendChild(s);
+                console.log(i);
+                console.log(highlights[j]);
+                s = highlights[j].createSpan(text);
+                console.log(s);
+                analysis_div.appendChild(s);
                 i = highlights[j].end;
+                highlighted = true;
+                // Break out of the for loop, so we don't add more highlights for this position and duplicate text
+                break;
             }
-            else {
-                // This is wildly inefficient, I'm sure, but eh.
-                text_area.appendChild(document.createTextNode(text[i]));
-            }
+        }
+
+        // If we didn't add a highlight for this letter, append it to the text
+        if (highlighted == false) {
+            analysis_div.appendChild(document.createTextNode(text[i]));
         }
     }
 }
@@ -117,7 +123,6 @@ function adv_analysis(text, color) {
 }
 
 function rep_analysis(text, color) {
-    console.log("Repetition analysis executing");
     text = text.toLowerCase();
     text = removePunctuation(text);
     var words = text.split(" ");
@@ -126,10 +131,7 @@ function rep_analysis(text, color) {
     highlights = [];
     
     for (var i = 0; i < words.length; i++) {
-        console.log("current word: " + words[i]);
-        console.log("recent words: " + recent_words);
         if (recent_words.includes(words[i])) {
-            console.log("Adding highlight for word " + words[i]);
             highlights.push(new Highlight(cur_pos, cur_pos + words[i].length, color));
         }
 
