@@ -150,5 +150,20 @@ function rep_analysis(text, color) {
 }
 
 function len_analysis(text, color) {
+    const sentence_length_threshold = 15;
+    var sentences = text.split(".");
+    highlights = [];
+    cur_pos = 0;
+    
+    for (var i = 0; i < sentences.length; i++) {
+        words = sentences[i].split(" ");
 
+        if (words.length > sentence_length_threshold) {
+            highlights.push(new Highlight(cur_pos, cur_pos + sentences[i].length, color));
+         }
+
+        cur_pos += sentences[i].length + 1; // +1 for the period that we took out
+    }
+
+    return highlights;
 }
