@@ -54,11 +54,9 @@ function analyze() {
     /* Perform analyses */
     for (i = 0; i < analyses.length; i++) {
         if (analyses[i].checkbox.checked) {
-            console.log(analyses[i].color);
             h = analyses[i].analyze(text, analyses[i].color);
 
             for (j = 0; j < h.length; j++) {
-                console.log(j);
                 highlights.push(h[j]);
 
                 /* This is for debugging purposes, so we don't get into an unreasonably large (infinite) loop */
@@ -90,7 +88,6 @@ function analyze() {
 
         for (j = 0; j < highlights.length; j++) {
             if (highlights[j].start == i) {
-                console.log(highlights[j]);
                 s = highlights[j].createSpan(text);
                 analysis_div.appendChild(s);
                 i = highlights[j].end;
@@ -129,19 +126,12 @@ function adv_analysis(text, color) {
     var adv_highlights = [];
     var cur_pos = 0;
 
-    console.log("Executing adverb analysis");
-    
     for (var i = 0; i < words.length; i++) {
         var punctuationless = removePunctuation(words[i]);
         
-        console.log(punctuationless);
-        console.log(punctuationless[punctuationless.length-2]);
-        console.log(punctuationless[punctuationless.length-1]);
-        
         /* This is a very simple adverb test, where any word ending in 'ly' is considered an adverb */
         if (punctuationless[punctuationless.length - 2] == "l" && punctuationless[punctuationless.length - 1] == "y") {
-            console.log("Adding highlight");
-            adv_highlights.push(new Highlight(cur_pos, cur_pos + words[i].length, color));
+            adv_highlights.push(new Highlight(cur_pos, cur_pos + words[i].length - 1, color));
         }
 
         cur_pos += words[i].length + 1; // +1 for space we removed
@@ -160,7 +150,7 @@ function rep_analysis(text, color) {
     for (var i = 0; i < words.length; i++) {
         var punctuationless = removePunctuation(words[i]);
         if (recent_words.includes(punctuationless)) {
-            rep_highlights.push(new Highlight(cur_pos, cur_pos + words[i].length, color));
+            rep_highlights.push(new Highlight(cur_pos, cur_pos + words[i].length - 1, color));
         }
 
         recent_words.push(words[i]);
@@ -185,7 +175,7 @@ function len_analysis(text, color) {
         words = sentences[i].split(" ");
 
         if (words.length > sentence_length_threshold) {
-            len_highlights.push(new Highlight(cur_pos, cur_pos + sentences[i].length, color));
+            len_highlights.push(new Highlight(cur_pos, cur_pos + sentences[i].length - 1, color));
          }
 
         cur_pos += sentences[i].length + 1; // +1 for the period that we took out
