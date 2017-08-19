@@ -121,11 +121,33 @@ function removePunctuation(text) {
  * Returns the character positions of text that should be highlighted as a result of this analysis
  */
 function pv_analysis (text, color) {
-    
+
 }
 
 function adv_analysis(text, color) {
+    var words = text.split(" ");
+    var adv_highlights = [];
+    var cur_pos = 0;
 
+    console.log("Executing adverb analysis");
+    
+    for (var i = 0; i < words.length; i++) {
+        var punctuationless = removePunctuation(words[i]);
+        
+        console.log(punctuationless);
+        console.log(punctuationless[punctuationless.length-2]);
+        console.log(punctuationless[punctuationless.length-1]);
+        
+        /* This is a very simple adverb test, where any word ending in 'ly' is considered an adverb */
+        if (punctuationless[punctuationless.length - 2] == "l" && punctuationless[punctuationless.length - 1] == "y") {
+            console.log("Adding highlight");
+            adv_highlights.push(new Highlight(cur_pos, cur_pos + words[i].length, color));
+        }
+
+        cur_pos += words[i].length + 1; // +1 for space we removed
+    }
+
+    return adv_highlights;
 }
 
 function rep_analysis(text, color) {
@@ -136,7 +158,7 @@ function rep_analysis(text, color) {
     rep_highlights = [];
     
     for (var i = 0; i < words.length; i++) {
-        punctuationless = removePunctuation(words[i]);
+        var punctuationless = removePunctuation(words[i]);
         if (recent_words.includes(punctuationless)) {
             rep_highlights.push(new Highlight(cur_pos, cur_pos + words[i].length, color));
         }
