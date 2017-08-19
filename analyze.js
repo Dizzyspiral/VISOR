@@ -5,13 +5,6 @@ var rep_analysis_id = "repetition";
 var len_analysis_id = "sentence_length";
 var analyzed_text_id = "analyzed_text";
 
-function highlight (text, style) {
-    h = document.createElement("span");
-    h.class = style;
-    h.appendChild(document.createTextNode(text));
-    return h;
-}
-
 class Analysis {
     constructor(func, color, checkbox) {
         this.func = func;
@@ -20,8 +13,8 @@ class Analysis {
     }
 
     analyze(text) {
-        var highlights = this.func(text, this.color);
-        return highlights;
+        var h = this.func(text, this.color);
+        return h;
     }
 }
 
@@ -55,11 +48,24 @@ function analyze() {
     var text_area = document.getElementById("user_text");
     text = text_area.value;
     highlights = [];
+    var i = 0;
+    var j = 0;
 
-    for (var i = 0; i < analyses.length; i++) {
+    /* Perform analyses */
+    for (i = 0; i < analyses.length; i++) {
         if (analyses[i].checkbox.checked) {
             console.log(analyses[i].color);
-            highlights.push.apply(highlights, analyses[i].analyze(text, analyses[i].color));
+            h = analyses[i].analyze(text, analyses[i].color);
+
+            for (j = 0; j < h.length; j++) {
+                console.log(j);
+                highlights.push(h[j]);
+
+                /* This is for debugging purposes, so we don't get into an unreasonably large (infinite) loop */
+                if (j == 100) {
+                    break;
+                }
+            }
         }
     }
 
@@ -82,12 +88,10 @@ function analyze() {
     for (i = 0; i < text.length; i++) {
         highlighted = false;
 
-        for (var j = 0; j < highlights.length; j++) {
+        for (j = 0; j < highlights.length; j++) {
             if (highlights[j].start == i) {
-                console.log(i);
                 console.log(highlights[j]);
                 s = highlights[j].createSpan(text);
-                console.log(s);
                 analysis_div.appendChild(s);
                 i = highlights[j].end;
                 highlighted = true;
@@ -129,12 +133,12 @@ function rep_analysis(text, color) {
     var words = text.split(" ");
     var cur_pos = 0;
     recent_words = [];
-    highlights = [];
+    rep_highlights = [];
     
     for (var i = 0; i < words.length; i++) {
         punctuationless = removePunctuation(words[i]);
         if (recent_words.includes(punctuationless)) {
-            highlights.push(new Highlight(cur_pos, cur_pos + words[i].length, color));
+            rep_highlights.push(new Highlight(cur_pos, cur_pos + words[i].length, color));
         }
 
         recent_words.push(words[i]);
@@ -146,24 +150,24 @@ function rep_analysis(text, color) {
         cur_pos += words[i].length + 1; // We assume a single space, which is why we +1
     }
 
-    return highlights;
+    return rep_highlights;
 }
 
 function len_analysis(text, color) {
     const sentence_length_threshold = 15;
     var sentences = text.split(".");
-    highlights = [];
+    len_highlights = [];
     cur_pos = 0;
     
     for (var i = 0; i < sentences.length; i++) {
         words = sentences[i].split(" ");
 
         if (words.length > sentence_length_threshold) {
-            highlights.push(new Highlight(cur_pos, cur_pos + sentences[i].length, color));
+            len_highlights.push(new Highlight(cur_pos, cur_pos + sentences[i].length, color));
          }
 
         cur_pos += sentences[i].length + 1; // +1 for the period that we took out
     }
 
-    return highlights;
+    return len_highlights;
 }
