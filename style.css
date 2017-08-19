@@ -1,0 +1,31 @@
+#analysis_area {
+    float: right;
+}
+
+#document_area {
+    float: left;
+    height: 100%;
+}
+
+#main_area {
+    height: 100%;
+    width: 1400px;
+}
+
+#user_text {
+    float: left;
+}
+
+#analyzed_text {
+    float: right;
+    width: 500px;
+    margin-left: 20px;
+}
+
+body {
+    height: 100%;
+}
+
+.pv_highlight {
+    background-color:pink;
+}
