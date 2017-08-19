@@ -9,7 +9,7 @@
 
 #main_area {
     height: 100%;
-    width: 1400px;
+    width: 1500px;
 }
 
 #user_text {
@@ -18,7 +18,7 @@
 
 #analyzed_text {
     float: right;
-    width: 500px;
+    width: 600px;
     margin-left: 20px;
 }
 
@@ -28,4 +28,13 @@ body {
 
 .pv_highlight {
     background-color:pink;
+}
+
+#title_bar {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#title {
+    float: center;
 }

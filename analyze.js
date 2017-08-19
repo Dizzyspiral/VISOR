@@ -34,10 +34,10 @@ class Highlight {
 }
 
 function initializeAnalyses() {
-    analyses.push(new Analysis(pv_analysis, "red", document.getElementById(pv_checkbox_id)));
-    analyses.push(new Analysis(adv_analysis, "blue", document.getElementById(adv_analysis_id)));
-    analyses.push(new Analysis(rep_analysis, "green", document.getElementById(rep_analysis_id)));
-    analyses.push(new Analysis(len_analysis, "yellow", document.getElementById(len_analysis_id)));
+//    analyses.push(new Analysis(pv_analysis, "red", document.getElementById(pv_checkbox_id)));
+    analyses.push(new Analysis(adv_analysis, "#a7c3f2", document.getElementById(adv_analysis_id)));
+    analyses.push(new Analysis(rep_analysis, "#75c464", document.getElementById(rep_analysis_id)));
+    analyses.push(new Analysis(len_analysis, "#fffd89", document.getElementById(len_analysis_id)));
 }
 
 function analyze() {
@@ -166,12 +166,13 @@ function rep_analysis(text, color) {
 }
 
 function len_analysis(text, color) {
-    const sentence_length_threshold = 15;
-    var sentences = text.split(".");
+    const sentence_length_threshold = 25;
+    var sentences = text.split(/\.|!|\?/);
     len_highlights = [];
     cur_pos = 0;
     
     for (var i = 0; i < sentences.length; i++) {
+        console.log(sentences[i]);
         words = sentences[i].split(" ");
 
         if (words.length > sentence_length_threshold) {
